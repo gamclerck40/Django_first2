@@ -1,11 +1,22 @@
-<h1>최근 질문</h1>
+{% extends "polls/base.html" %}
+{% load static %}
+
+{% block title %}
+POLLS
+{% endblock %}
+
+{% block content %}
 {% if latest_question_list %}
-    <ul>
+  <ul>
     {% for question in latest_question_list %}
-        <li><a href="{% url 'polls:detail' question.id %}">{{ question.question_text }}</a></li>
-        <!-- '하드 코딩'을 꼭 활용할 것, 절대 경로로 설정하면 나중에 관리가 힘들어진다. -->
+      <li>
+        <a href="{% url 'polls:detail' question.id %}">
+          {{ question.question_text }}
+        </a>
+      </li>
     {% endfor %}
-    </ul>
+  </ul>
 {% else %}
-    <p>No polls are available.</p>
+  <p>No polls are available.</p>
 {% endif %}
+{% endblock %}

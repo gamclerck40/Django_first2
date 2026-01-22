@@ -27,7 +27,4 @@ urlpatterns = [
     path("", include("polls.urls")),
     # http://127.0.0.1:8001 >> 아무것도 없지만 polls는 호출.
     
-    path("polls/", include("polls.urls")),  # polls 앱의 URL 연결
-    # http://127.0.0.1:8000/polls
-
     ]

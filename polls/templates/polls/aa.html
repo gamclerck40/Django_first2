@@ -1,0 +1,27 @@
+<h1>보이니?? aa야</h1>>
+
+{% if questions %}
+<!-- views에 있는 'latest_question_list'에 List 요소가 있으면 조건문 실행! -->
+    <ul>
+    
+
+    {% for question in questions %}
+        <h4>원본 데이터 꺼내기: {{question}}</h4>
+        <h4>데이터의 id: {{question.id}}</h4>
+        <h4>모델 데이터 제목 가져오기: {{question.question_text}}</h4>
+        <h4>---------------------------------------------------</h4>
+        
+        <!-- '하드 코딩'을 꼭 활용할 것, 절대 경로로 설정하면 나중에 관리가 힘들어진다. -->
+    {% endfor %}
+    {% for choice in questions.choice_set %}
+        <h4>{{choice.choice_text}}</h4>
+    {% endfor %}
+    {% for question in questions %}
+        {% for choice in question.choice_set.all %}
+            <h4>Choice : {{choice.choice_text}}</h4>
+        {% endfor %}
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
