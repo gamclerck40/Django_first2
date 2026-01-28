@@ -28,11 +28,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "ci-dev-secret-key"
+DEBUG = os.environ.get("DEBUG", "0") == "1"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+  
 
 # Application definition
 # 앱을 설치하자마자 해줘야 할 것.

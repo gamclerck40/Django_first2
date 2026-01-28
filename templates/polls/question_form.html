@@ -1,11 +1,97 @@
-{% extends "polls/base.html" %} 
+{% extends "polls/base.html" %}
 {% block title %} 질문 작성/수정 {% endblock %}
 
 {% block content %}
-<h2>질문 입력</h2>
 <form method="post">
-  {% csrf_token %} 
-  {{ form.as_p }}
-  <button type="submit">저장</button>
+  <div class="form-container">
+    {% csrf_token %}
+
+    <p>
+      <label for="{{ form.question_text.id_for_label }}">질문:</label><br>
+      <input type="text"
+             name="{{ form.question_text.name }}"
+             id="{{ form.question_text.id_for_label }}"
+             value="{{ form.question_text.value|default_if_none:'' }}"
+             placeholder="예: 당신이 좋아하는 음식은 무엇인가요?"
+             required>
+      {{ form.question_text.errors }}
+    </p>
+
+    <p>
+      {# label은 UI용 입력을 가리키게 하는 게 자연스러움 #}
+      <label for="pub_date_ui">게시 날짜와 시간:</label><br>
+
+      {# 1) 사용자에게 보여줄 datetime-local (name 없음!) #}
+      <input type="datetime-local"
+             id="pub_date_ui"
+             placeholder="예: 2025-06-06T10:00"
+             required>
+
+      {# 2) 실제로 Django에 제출될 값(포맷: YYYY-MM-DD HH:MM:SS) #}
+      <input type="hidden"
+             name="{{ form.pub_date.name }}"
+             id="{{ form.pub_date.id_for_label }}"
+             value="{{ form.pub_date.value|default_if_none:'' }}">
+
+      {{ form.pub_date.errors }}
+    </p>
+
+    <button type="submit" class="submit-btn">저장</button>
+  </div>
 </form>
+
+<script>
+(function () {
+  const ui = document.getElementById("pub_date_ui");
+  const hidden = document.getElementById("{{ form.pub_date.id_for_label }}");
+
+  // datetime-local("YYYY-MM-DDTHH:MM" or "...:SS") -> "YYYY-MM-DD HH:MM:SS"
+  function toDjangoString(v) {
+    if (!v) return "";
+    const parts = v.split("T");
+    if (parts.length !== 2) return v;
+
+    const date = parts[0];
+    let time = parts[1];
+
+    // 브라우저가 초를 안 주면 :00 붙이기
+    if (time.length === 5) time += ":00";
+
+    return date + " " + time;
+  }
+
+  // "YYYY-MM-DD HH:MM:SS" (또는 초 생략) -> "YYYY-MM-DDTHH:MM"
+  function toDatetimeLocalValue(s) {
+    if (!s) return "";
+    s = String(s).trim();
+
+    // Django가 넘겨준 값이 "YYYY-MM-DD HH:MM:SS" 형태일 때 처리
+    const m = s.match(/^(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})(?::\d{2})?$/);
+    if (m) return m[1] + "T" + m[2];
+
+    // 혹시 이미 "YYYY-MM-DDTHH:MM" 형태로 들어오면 그대로(초 제거만)
+    const m2 = s.match(/^(\d{4}-\d{2}-\d{2})T(\d{2}:\d{2})(?::\d{2})?$/);
+    if (m2) return m2[1] + "T" + m2[2];
+
+    return "";
+  }
+
+  // 1) Update(수정) 화면: hidden 초기값이 있으면 UI에 채워 넣기
+  if (hidden.value) {
+    const v = toDatetimeLocalValue(hidden.value);
+    if (v) ui.value = v;
+  }
+
+  // 2) Create/Update 공통: 사용자가 UI를 바꾸면 hidden을 업데이트
+  ui.addEventListener("input", () => {
+    hidden.value = toDjangoString(ui.value);
+  });
+
+  // 3) 제출 직전에도 한번 강제 동기화 (사용자가 안 건드렸을 때 대비)
+  const form = ui.closest("form");
+  form.addEventListener("submit", () => {
+    hidden.value = toDjangoString(ui.value);
+  });
+})();
+</script>
 {% endblock %}
