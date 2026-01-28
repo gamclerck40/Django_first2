@@ -10,9 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 # 운영체제에 가까움. 앱을 실행할 때 그 즉시 설정을 만져줘야 함.
-
+from dotenv import load_dotenv
 from pathlib import Path
 import os
+
+load_dotenv()
 
 LOGIN_REDIRECT_URL = "polls:index"   # 로그인 성공 후 polls 홈으로
 LOGOUT_REDIRECT_URL = "polls:index"  # 로그아웃 후 polls 홈으로 (원하면)
@@ -25,8 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-t8mb#_15i96yfzpw7fmyl^&ad1m1@^m)t$bar8_=z3t%9xh*kl'
-
+SECRET_KEY = os.environ.get("DJANGO_SECRET_KEY") or "ci-dev-secret-key"
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -84,13 +85,44 @@ WSGI_APPLICATION = 'mysite.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/6.0/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        # Django가 사용할 데이터베이스 종류
+        # sqlite3 → postgresql로 변경됨
+        "ENGINE": "django.db.backends.postgresql",
+
+        # 사용할 데이터베이스 이름
+        # 환경변수 POSTGRES_DB가 있으면 그 값을 사용
+        # 없으면 기본값 "django_first2_db" 사용
+        "NAME": os.environ.get("POSTGRES_DB", "django_first2_db"),
+
+        # PostgreSQL 접속 계정 이름
+        # 환경변수 POSTGRES_USER가 있으면 그 값을 사용
+        # 없으면 기본값 "django_user" 사용
+        "USER": os.environ.get("POSTGRES_USER", "django_user"),
+
+        # PostgreSQL 접속 비밀번호
+        # 환경변수 POSTGRES_PASSWORD가 있으면 그 값을 사용
+        # 없으면 기본값 "strong-password" 사용
+        # (실무에서는 기본값 없이 env로만 관리하는 경우가 많음)
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "strong-password"),
+
+        # PostgreSQL 서버 주소
+        # 로컬 개발/CI에서는 보통 127.0.0.1 (내 컴퓨터)
+        # GitHub Actions service를 쓰는 경우엔 "postgres"가 될 수도 있음
+        "HOST": os.environ.get("POSTGRES_HOST", "127.0.0.1"),
+
+        # PostgreSQL 서버 포트
+        # 기본 포트는 5432
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators

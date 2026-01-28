@@ -1,0 +1,19 @@
+[
+{
+  "model": "auth.user",
+  "fields": {
+    "password": "pbkdf2_sha256$1200000$FoseZlvYfcedDj75Tbm4VW$W3o1kfIXLd67ewX5j1zzLAPpulaO0VDXGCtRMA5vZ0Q=",
+    "last_login": null,
+    "is_superuser": true,
+    "username": "normalframe1094",
+    "first_name": "",
+    "last_name": "",
+    "email": "kapol2990@gmail.com",
+    "is_staff": true,
+    "is_active": true,
+    "date_joined": "2026-01-28T05:52:36.206Z",
+    "groups": [],
+    "user_permissions": []
+  }
+}
+]
