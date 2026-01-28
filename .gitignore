@@ -15,9 +15,9 @@ db.sqlite3
 *.sqlite3
 
 # Django 마이그레이션 캐시 제외
-**/migrations/*.pyc
-**/migrations/*.py
-!**/migrations/__init__.py
+# **/migrations/*.pyc
+# **/migrations/*.py
+# !**/migrations/__init__.py
 
 # 로그 파일 제외
 *.log
