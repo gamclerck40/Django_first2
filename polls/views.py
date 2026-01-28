@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.views import generic
 from django.http import HttpResponseRedirect
 from django.utils import timezone
+from django.urls import reverse_lazy
 
 
 # http 화면을 구성하는 기능 호출
@@ -74,6 +75,7 @@ class DetailView(generic.DetailView):
     context_object_name = "question"
     def get_queryset(self):
         return Question.objects.filter(pub_date__lte=timezone.now())    
+    
 # 결과 페이지 (DetailView 클래스 활용 - html 구현하기 나름.)
 class ResultsView(generic.DetailView):
     model = Question
@@ -104,3 +106,19 @@ def vote(request, question_id):
         # 어제 강의 참고.. 상세 설명 하셨음.
         selected_choice.save()
         return HttpResponseRedirect(reverse("polls:results", args=(question.id,)))
+class QuestionCreateView(generic.CreateView):
+    model = Question
+    fields = ["question_text", "pub_date"]
+    template_name = "polls/question_form.html"
+    success_url = reverse_lazy("polls:index")
+
+class QuestionUpdateView(generic.UpdateView):
+    model = Question
+    fields = ["question_text", "pub_date"]
+    template_name = "polls/question_form.html"
+    success_url = reverse_lazy("polls:index")
+
+class QuestionDeleteView(generic.DeleteView):
+    model = Question
+    template_name = "polls/question_confirm_delete.html"
+    success_url = reverse_lazy("polls:index")

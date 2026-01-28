@@ -1,4 +1,8 @@
 from django.db import models
+from django.contrib import admin
+from django.utils import timezone
+import datetime
+
 # Create your models here.
 # ORM - 테이블 만드는 요소들은 넣어라.
 # models를 상속받아서 테이블을 만드는데, 테이블은 Class로 선언.
@@ -20,18 +24,23 @@ class Question(models.Model):
 #   -------------------------
     def __str__(self):
         return f"{self.id} | {self.question_text} | {self.pub_date}"
-    # Object 객체를 한글로 변환.
-    
+    # Object 객체를 한글로 변환. 생략시 'Question object(num)' 따위로 표시될 것임.
+    @admin.display(
+        boolean=True,
+        ordering="pub_date",
+        description="Published recently?",
+    )
+    #'was_published_recently 데이터
     def was_published_recently(self):
-        from django.utils import timezone
-        import datetime
-        return self.pub_date >= timezone.now() - datetime.timedelta(days=1) and self.pub_date <= timezone.now()
+        now = timezone.now()
+        return now - datetime.timedelta(days=1) <= self.pub_date <= now
         #Today = 2026.01.22.15:15 기준으로 24시간 내에 쓴 글이어야 함.
         #2026.01.22.09:15 >= 2026.01.21.15:15 >> 하루 내 만족 True 반환
         #2026.01.21.15:14 <= 2026.01.21.15:15 >> 하루 내 불만족
         #BUT 오늘 날짜보다 더 '미래'일 때
         # >> 2026.02.21.15:15 >= 2026.01.21.15:15 이것도 만족해 버리므로 이에대한
         # 예외처리 필요!!
+        # '비교' 연산이기에 bool 값을 리턴함.
 
     # 20시간 이내에 쓴건 True, 그외에는 False를 출력하도록.
 
